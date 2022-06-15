@@ -1,13 +1,13 @@
 import re
 import requests
-import pandas as pd
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 from dateutil.parser import parse
 from requests.adapters import HTTPAdapter, Retry
 
 
 class Scraper:
-    """_summary_
+    """Scraper to fetch recent news from https://cryptonews.com
     """    
 
     BASE = 'https://cryptonews.com'
@@ -19,32 +19,30 @@ class Scraper:
         self.news = []
 
     def run(self):
-        """_summary_
+        """Main function runs other components
         """        
 
-        url = f'{self.BASE}/news'
-        response = self._request(url)
-
+        response = self._request(f'{self.BASE}/news')
         if response.status_code != 200:
             return False
 
-        self._extract(response.content)
-        print(self.news)
+        self._extract(response)
+        return self.news
 
     def _request(self, url):
-        """_summary_
+        """send get request to url and return response
 
         Args:
-            url (str): _description_
+            url (str)
         """ 
         
         return self._get_session().get(url)   
 
-    def _extract(self, content): 
+    def _extract(self, response): 
         """extract fields from html content
 
         Args:
-            content
+            response (requests.Response)
         """   
 
         def _extract_content(article):
@@ -62,11 +60,11 @@ class Scraper:
                 return False
 
             data['title'] = atag.text.strip()
-            data['url'] = atag['href']
+            data['url'] = urljoin(self.BASE, atag['href'])
             data['timestamp'] = parse(divtag['data-utctime'])
             return data
         
-        soup = BeautifulSoup(content.decode('utf-8'), 'html.parser')
+        soup = BeautifulSoup(response.content.decode('utf-8'), 'html.parser')
         articles = soup.find_all('article')
 
         if len(articles) == 0:
@@ -86,7 +84,7 @@ class Scraper:
             status_forcelist=(500, 502, 504),
             session=None,
     ):
-        """Creating a customized requests' session to retry request on a certain condition
+        """Creating a customized requests' session to retry a request on certain conditions
 
         Args:
             retries (int, optional): _description_. Defaults to 3.
@@ -112,8 +110,3 @@ class Scraper:
         session.mount('https://', adapter)
         session.headers.update(self.HEADERS)
         return session
-
-
-if __name__ == '__main__':
-    obj = Scraper()
-    obj.run()
