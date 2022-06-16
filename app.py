@@ -7,6 +7,7 @@ log = logger.get('app')
 
 
 def app():
+    log.info('creating scraper engine object')
     engine = scraper.Scraper()
     extracted = engine.run()
     if not extracted:
