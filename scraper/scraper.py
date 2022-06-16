@@ -1,9 +1,13 @@
 import re
+import logger
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from dateutil.parser import parse
 from requests.adapters import HTTPAdapter, Retry
+
+
+log = logger.get('scraper')
 
 
 class Scraper:
@@ -24,9 +28,13 @@ class Scraper:
 
         response = self._request(f'{self.BASE}/news')
         if response.status_code != 200:
+            log.critical(f'get request returned {response.status_code} status code')
             return False
 
+        log.debug('fetched page content successfully')
         self._extract(response)
+
+        log.debug(f'{len(self.news)} news stored')
         return self.news
 
     def _request(self, url):
@@ -64,12 +72,15 @@ class Scraper:
             data['timestamp'] = parse(divtag['data-utctime'])
             return data
         
+        log.info('html content passed to extractor')
         soup = BeautifulSoup(response.content.decode('utf-8'), 'html.parser')
         articles = soup.find_all('article')
 
         if len(articles) == 0:
+            log.warning('no article tag found in html content')
             return False
 
+        log.debug(f'found {len(articles)} article tags')
         for article in articles:
             data = _extract_content(article)
             if not data:
