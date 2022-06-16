@@ -28,7 +28,7 @@ class Serializer:
         self._filter_recent_news()
 
         if self.dataframe.empty:
-            log.warning('dataframe is empy')
+            log.warning('dataframe is empty')
             return False
 
         log.debug('dataframe ready to be loaded to database')
