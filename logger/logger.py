@@ -6,8 +6,8 @@ from logging.handlers import TimedRotatingFileHandler
 class Logger:
 
     def __init__(self, 
-                log_file='logs.txt', 
-                log_format="%(asctime)s — %(name)s — %(levelname)s — %(message)s"):
+                log_file='etl.log', 
+                log_format="[%(asctime)s][%(name)s][%(levelname)s] %(message)s"):
 
         self.log_file = log_file
         self.formatter = logging.Formatter(log_format)
