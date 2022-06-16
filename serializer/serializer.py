@@ -1,5 +1,9 @@
+import logger
 import database
 import pandas as pd
+
+
+log = logger.get('serializer')
 
 
 class Serializer:
@@ -24,8 +28,10 @@ class Serializer:
         self._filter_recent_news()
 
         if self.dataframe.empty:
+            log.warning('dataframe is empy')
             return False
 
+        log.debug('dataframe ready to be loaded to database')
         return True
 
     def load(self):
@@ -35,9 +41,10 @@ class Serializer:
         try:
             conn = database.SQLLite()
             conn.to_db(self.dataframe)
+            log.info('data inserted to database')
             return self.dataframe
         except Exception as e:
-            print('Err', e)
+            log.critical('error inserting data to database', exc_info=True)
             return False
 
     def _sorted(self):
@@ -45,6 +52,7 @@ class Serializer:
         """        
 
         self.data = sorted(self.data, key=lambda x: x['timestamp'], reverse=False)
+        log.debug('data sorted based on timestamp in ascending order')
 
     def _get_latest_date(self):
         """get most recent date in database from timestamp column 
@@ -54,9 +62,11 @@ class Serializer:
         df = conn.get_table()
 
         if not df.empty:
+            log.debug('prior data found in database')
             return df.sort_values('timestamp', 
                 ascending=False)['timestamp'].iloc[0]
         else:
+            log.debug('no prior data available in database')
             return False
 
     def _filter_recent_news(self):
@@ -65,7 +75,12 @@ class Serializer:
 
         latest_date = self._get_latest_date()
         if not latest_date:
+            log.debug('keeping all data without filtering')
             return 
 
+        log.debug(f'rows count before filtering: {len(self.dataframe)}')
+        log.debug(f'filtering input data by timestamp greater than {latest_date}')
         self.dataframe = self.dataframe[self.dataframe.timestamp > 
                 latest_date].reset_index(drop=True)
+        
+        log.debug(f'rows count after filtering: {len(self.dataframe)}')
