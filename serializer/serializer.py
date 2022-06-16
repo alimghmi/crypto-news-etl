@@ -42,7 +42,7 @@ class Serializer:
             conn = database.SQLLite()
             conn.to_db(self.dataframe)
             log.info('data inserted to database')
-            return self.dataframe
+            return True
         except Exception as e:
             log.critical('error inserting data to database', exc_info=True)
             return False
