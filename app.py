@@ -14,13 +14,18 @@ def app():
         return False
 
     log.info('data extracted successfully')
+    
     transform = serializer.Serializer(extracted)
     if not transform.validate():
         log.error('data validation failed')
         return False
 
     log.info('data validated successfully')
-    transform.load()
+
+    if not transform.load():
+        log.error('data loading failed')
+        return False
+
     log.info('data loaded successfully')
 
 
