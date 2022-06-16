@@ -1,26 +1,27 @@
+import logger
 import scraper
 import serializer
+
+
+log = logger.get('app')
 
 
 def app():
     engine = scraper.Scraper()
     extracted = engine.run()
     if not extracted:
-        print('Err', 'No data from scraper')
+        log.error('data extraction failed')
         return False
 
-    print('Success', 'Data Extracted')
-
+    log.info('data extracted successfully')
     transofrm = serializer.Serializer(extracted)
     if not transofrm.validate():
-        print('Err', 'Data validation failed')
+        log.error('data validation failed')
         return False
 
-    print('Success', 'Data validated')
+    log.info('data validated successfully')
     output = transofrm.load()
-
-    print('Success', 'Data loaded to database')
-    print(output)
+    log.info('data loaded successfully')
 
 
 if __name__ == '__main__':
