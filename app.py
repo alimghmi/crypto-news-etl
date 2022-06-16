@@ -14,13 +14,13 @@ def app():
         return False
 
     log.info('data extracted successfully')
-    transofrm = serializer.Serializer(extracted)
-    if not transofrm.validate():
+    transform = serializer.Serializer(extracted)
+    if not transform.validate():
         log.error('data validation failed')
         return False
 
     log.info('data validated successfully')
-    output = transofrm.load()
+    transform.load()
     log.info('data loaded successfully')
 
 
