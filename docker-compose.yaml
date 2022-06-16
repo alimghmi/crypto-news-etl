@@ -4,4 +4,4 @@ services:
     build: .
     container_name: crypto-etl
     volumes:
-    - .:/app:ro
+    - .:/app
