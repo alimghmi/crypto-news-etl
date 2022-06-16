@@ -5,7 +5,7 @@ import pandas as pd
 
 class SQLLite:
 
-    def __init__(self, name='db.sqlite', table='news'):
+    def __init__(self, name='db.sqlite3', table='news'):
         self.engine = sqlalchemy.create_engine(f'sqlite:///{name}')
         self.connection = sqlite3.connect(name)
         self.table = table
