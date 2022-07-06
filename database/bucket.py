@@ -23,6 +23,3 @@ class Bucket:
         dataframe.to_csv(buffer, header=True, index=False)
         buffer.seek(0)
         self.s3.put_object(Bucket=self.BUCKET, Body=buffer.getvalue(), Key=filename)
-
-
-
