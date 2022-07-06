@@ -5,3 +5,5 @@ services:
     container_name: crypto-etl
     volumes:
     - .:/app
+    env_file:
+      - .env
