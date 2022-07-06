@@ -20,8 +20,9 @@ class Bucket:
 
     def to_bucket(self, filename, dataframe):
         buffer = StringIO()
-        dataframe.to_csv(buffer)
-        self.s3.upload_fileobj(buffer, self.BUCKET, filename)
+        dataframe.to_csv(buffer, header=True, index=False)
+        buffer.seek(0)
+        self.s3.put_object(Bucket=self.BUCKET, Body=buffer.getvalue(), Key=filename)
 
 
 
