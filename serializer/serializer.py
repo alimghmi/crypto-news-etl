@@ -1,3 +1,4 @@
+import time
 import logger
 import database
 import pandas as pd
@@ -41,11 +42,23 @@ class Serializer:
         try:
             conn = database.SQLLite()
             conn.to_db(self.dataframe)
-            log.info('data inserted to database')
-            return True
         except Exception as e:
             log.critical('error inserting data to database', exc_info=True)
             return False
+        else:
+            log.info('data inserted to database')
+
+        try:
+            filename = f'{int(time.time())}.csv'
+            conn = database.Bucket()
+            conn.to_bucket(filename, self.dataframe)
+        except Exception as e:
+            log.critical(f'error uploading {filename} to s3 bucket', exc_info=True)
+            return False
+        else:
+            log.info(f'{filename} upladed to s3 bucket')
+        
+        return True
 
     def _sorted(self):
         """Sort list of dictioneries based on timestamp in decending order
