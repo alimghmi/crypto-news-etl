@@ -6,7 +6,7 @@ from logging.handlers import TimedRotatingFileHandler
 class Logger:
 
     def __init__(self, 
-                log_file='etl.log', 
+                log_file, 
                 log_format="[%(asctime)s][%(name)s][%(levelname)s] %(message)s"):
 
         self.log_file = log_file
@@ -31,5 +31,5 @@ class Logger:
         return file_handler
 
 
-def get(logger_name):
-    return Logger().get(logger_name)
+def get(logger_name, log_file='etl.log'):
+    return Logger(log_file=log_file).get(logger_name)
